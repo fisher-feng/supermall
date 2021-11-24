@@ -7,10 +7,12 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "path": "^0.12.7",
     "vue": "^2.6.11",
-    "vue-router": "^2.0.0"
+    "vue-router": "^2.0.0",
+    "vue-swipe": "^2.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

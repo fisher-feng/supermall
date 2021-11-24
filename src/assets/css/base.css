@@ -56,3 +56,6 @@ a {
 .right {
   float: right;
 }
+img {
+  vertical-align: middle;
+}

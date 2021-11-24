@@ -43,7 +43,6 @@
         },
         methods:{
           itemCick(){
-            console.log('aaaa');
             this.$router.replace(this.path);
           }
         }
