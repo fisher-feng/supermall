@@ -3,7 +3,7 @@
     <swipe class="my-swipe">
       <swipe-item class="slide" v-for="(item,index) in slides" :key="index">
         <a v-bind:href="item.link">
-            <img v-bind:src="item.image" alt="">aaas
+            <img v-bind:src="item.image" alt="">
         </a>
       </swipe-item>
     </swipe>

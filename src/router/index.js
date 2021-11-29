@@ -11,50 +11,42 @@ Router.prototype.push = function push(location) {
 
 Vue.use(Router)
 
-const Home = () => import('../views/home/Home')
-const Cart = () => import('../views/cart/Cart')
-const ProFile = () => import('../views/profile/ProFile')
-const Category = () => import('../views/category/Category')
+const Home = () =>
+  import ('../views/home/Home')
+const Cart = () =>
+  import ('../views/cart/Cart')
+const ProFile = () =>
+  import ('../views/profile/ProFile')
+const Category = () =>
+  import ('../views/category/Category')
 
 export default new Router({
-  routes: [
-    {
+  routes: [{
       path: '',
-      redirect:'/home'
+      redirect: '/home'
     },
     {
       path: '/home',
       name: '',
-      component:Home
+      component: Home
     },
     {
       path: '/category',
       name: '',
-      component:Category
+      component: Category
     },
     {
       path: '/cart',
       name: '',
-      component:Cart
+      component: Cart
     },
     {
       path: '/profile',
       name: '',
-      component:ProFile,
-      mode:history
+      component: ProFile,
+      mode: history
     }
   ],
-  mode: 'history',//去掉哈希#符号
- 
-})
+  mode: 'history', //去掉哈希#符号
 
-//解决路由重复点击报错问题
-const routerPush = Router.prototype.push
-Router.prototype.push = function push(location) {
-  if(typeof(location)=="string"){
-    var Separator = "&";
-    if(location.indexOf('?')==-1) { Separator='?'; }
-    location = location + Separator + "random=" + Math.random();
-  }
-  return routerPush.call(this, location).catch(error=> error)
-}
+})

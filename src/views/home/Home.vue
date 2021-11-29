@@ -4,28 +4,36 @@
     <div id="home">
        <!-- 导航栏 -->
         <nav-bar class="home-nav">
-          <div slot="left">左</div>
+          <div slot="left"></div>
           <div slot="center">购物街</div>
-          <div slot="right">右</div>
+          <div slot="right"></div>
         </nav-bar>
         <!-- 轮播图 -->
         <!-- <home-swiper :banners="banners"></home-swiper> -->
           <!-- 使用插件 -->
-        <example :slides="banners"></example>
-
+      <!--scroll插件的使用  -->
+      <scroll class="wrapper" 
+              ref="scroll"
+              @pullingUp="loadMore"
+              @scroll="showBackTop"
+              :probe-type = "3"
+              :pull-up-load = "true"
+      >
+        <swipper :slides="banners"></swipper>
         <!-- recommends -->
         <recomend-view :recommends="recommends"></recomend-view>
         <!--  feater -->
         <feater></feater>
-
-       <!-- tabcontorl -->
+        <!-- tabcontorl -->
         <tab-contorl :titles="['流行','新款','精选']"
                       @tabClick="tabClick"
         />
         <good-list :goodsData="showGoods"></good-list>
-       <ul>
-         <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
-       </ul>
+       
+      </scroll>  
+      <!-- 置顶按钮 -->
+      <!-- native属性监听原生组件的点击事件，不然得在外层添加一层在监听 -->
+      <back-top @click.native="backTopClick" v-if="isShowBackTop"></back-top>
      
     </div>
 </template>
@@ -37,17 +45,17 @@ import TabContorl from 'components/content/TabControl/TabControl.vue'
 import GoodList from 'components/content/goods/GoodList.vue' 
 
 // 业务组件
-import HomeSwiper from 'views/home/ChildComponents/HomeSwiper.vue'
+// import HomeSwiper from 'views/home/ChildComponents/HomeSwiper.vue'
 import RecomendView from 'views/home/ChildComponents/RecommendView'
 import Feater from 'views/home/ChildComponents/Feater.vue'
-
 
 // 获取网络数据
 import{getHomeMultidata,RequestsHomeGoods}  from 'network/home.js'
 
 //使用插件
-import example from 'common/plug/swiper/example.vue'
-
+import swipper from 'common/plug/swiper/example.vue'
+import scroll from 'common/plug/scroll/scroll.vue'
+import BackTop from '../../components/content/backTop/backTop.vue'
 
     export default {
         name:'',
@@ -56,12 +64,17 @@ import example from 'common/plug/swiper/example.vue'
           TabContorl,
           GoodList,
 
-          HomeSwiper,
+          // HomeSwiper,
           Feater,
           RecomendView,
 
-          example
-                        
+          swipper,
+          scroll,
+          BackTop
+          
+        },
+        mounted(){
+          
         },
         data(){
           return {
@@ -73,6 +86,8 @@ import example from 'common/plug/swiper/example.vue'
               'sell': {page: 0, list: []},
             },
             currentType: 'pop',
+            scroll:null,
+            isShowBackTop:false
           }
         },
         computed: {
@@ -85,12 +100,10 @@ import example from 'common/plug/swiper/example.vue'
         created(){
           // 请求轮播图和 数据
           this.getHomeMultidata()
-
            // 2.请求商品数据
           this.getHomeGoods('pop')
           this.getHomeGoods('new')
-          this.getHomeGoods('sell')
-         
+          this.getHomeGoods('sell')       
         },
         methods:{
           /**
@@ -107,15 +120,23 @@ import example from 'common/plug/swiper/example.vue'
               case 2:
                 this.currentType = 'sell'
                 break
-            }
+            }   
+          },
+          // 加载更多数据
+          loadMore(){
+              this.getHomeGoods(this.currentType)
+          },
+          backTopClick(){
+            this.$refs.scroll.scrollTo(0,0,500)
+          },
+          showBackTop(position){
+            this.isShowBackTop = (-position.y) > 1000
           },
           // 广告数据
           getHomeMultidata(){
-            getHomeMultidata().then(res => {
-           
+            getHomeMultidata().then(res => {          
             this.banners = res.data.banner.list;
             this.recommends =res.data.recommend.list
-            console.log(this.banners);
           }).catch(err => {
             console.log(err);
           })
@@ -125,22 +146,47 @@ import example from 'common/plug/swiper/example.vue'
           getHomeGoods(type) {
             const page = this.goods[type].page + 1
             RequestsHomeGoods(type, page).then(res => {
-              console.log(res);
             this.goods[type].list.push(...res.data.list)
             this.goods[type].page += 1
-            // this.$refs.scroll.finishPullUp()
+            this.$refs.scroll.finishPullUp()
+            this.$refs.scroll.refresh()//重新计算content的高度，解决content的高度在没加载完好其他就确定了一个高度导致无法滚动的bug
             })
           }
-        }
-      
+        } 
     }
 
 </script>
 
 <style scoped>
+#home {
+  /*padding-top: 44px;*/
+  /* 视口高度 100vh表示100%的视口高度*/
+  height: 100vh;
+  position: relative;
+}
 .home-nav {
   background-color: var(--color-tiny);
   color: #fff;
-  /* font-size: 20px; */
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 9;
 }
+.wrapper{
+  overflow: hidden;
+  position: absolute;
+  top: 44px;
+  bottom: 49px;
+  left: 0;
+  right: 0;
+}
+
+/*.content {*/
+  /* calc动态计算 */
+  /* height: calc(100% - 93px); */
+  /*overflow: hidden;*/
+  /*margin-top: 44px;*/
+/*}*/
+
 </style>

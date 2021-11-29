@@ -35,6 +35,7 @@ import tabBarItem from 'components/common/tabbar/tarBarItem.vue'//使用了别�
           tabbar,
           tabBarItem
         }
+        
     }
 
 </script>

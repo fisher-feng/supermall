@@ -24,6 +24,7 @@
     left:0;
     bottom:0;
     box-shadow:0px -1px 1px rgb(red, green, blue);
+    z-index: 999;
   }
 
 </style>
