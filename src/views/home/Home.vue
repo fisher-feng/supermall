@@ -10,16 +10,27 @@
         </nav-bar>
         <!-- 轮播图 -->
         <!-- <home-swiper :banners="banners"></home-swiper> -->
-          <!-- 使用插件 -->
+        <tab-contorl :titles="['流行','新款','精选']"
+                      @tabClick="tabClick"
+                      ref="tableControl1"
+                      v-show="isTabFixed"
+                      class="tableControl"
+        />
       <!--scroll插件的使用  -->
-      <scroll class="wrapper" 
+      
+      <scroll class="content" 
               ref="scroll"
-              @pullingUp="loadMore"
-              @scroll="showBackTop"
+              @pullingUp ="loadMore"
+              @scroll="contentScroll"
               :probe-type = "3"
               :pull-up-load = "true"
       >
-        <swipper :slides="banners"></swipper>
+
+      
+        <swipper :slides="banners" 
+                 @swiperImg ="swiperImgLoad"
+        >
+        </swipper>
         <!-- recommends -->
         <recomend-view :recommends="recommends"></recomend-view>
         <!--  feater -->
@@ -27,10 +38,12 @@
         <!-- tabcontorl -->
         <tab-contorl :titles="['流行','新款','精选']"
                       @tabClick="tabClick"
+                      ref="tableControl2"
         />
         <good-list :goodsData="showGoods"></good-list>
        
       </scroll>  
+     
       <!-- 置顶按钮 -->
       <!-- native属性监听原生组件的点击事件，不然得在外层添加一层在监听 -->
       <back-top @click.native="backTopClick" v-if="isShowBackTop"></back-top>
@@ -43,7 +56,7 @@
 import NavBar from 'components/common/navbar/NavBar.vue'
 import TabContorl from 'components/content/TabControl/TabControl.vue'
 import GoodList from 'components/content/goods/GoodList.vue' 
-
+import {debounce} from 'common/utils.js'
 // 业务组件
 // import HomeSwiper from 'views/home/ChildComponents/HomeSwiper.vue'
 import RecomendView from 'views/home/ChildComponents/RecommendView'
@@ -74,7 +87,14 @@ import BackTop from '../../components/content/backTop/backTop.vue'
           
         },
         mounted(){
-          
+
+          // 防抖节流函数
+          const refresh = debounce(this.$refs.scroll.refresh,1)
+        
+           // 加载完每一张图片都重新计算content高度,以免没加载完图片就给定conten高度的bug
+          this.$bus.$on ('ItemImageLoad',() => {        
+            refresh()      
+          })
         },
         data(){
           return {
@@ -87,7 +107,9 @@ import BackTop from '../../components/content/backTop/backTop.vue'
             },
             currentType: 'pop',
             scroll:null,
-            isShowBackTop:false
+            isShowBackTop:false,
+            tableOffsetTop:null,
+            isTabFixed:false,
           }
         },
         computed: {
@@ -103,7 +125,9 @@ import BackTop from '../../components/content/backTop/backTop.vue'
            // 2.请求商品数据
           this.getHomeGoods('pop')
           this.getHomeGoods('new')
-          this.getHomeGoods('sell')       
+          this.getHomeGoods('sell')    
+          
+         
         },
         methods:{
           /**
@@ -121,6 +145,8 @@ import BackTop from '../../components/content/backTop/backTop.vue'
                 this.currentType = 'sell'
                 break
             }   
+            this.$refs.tableControl1.currentIndex = index;
+            this.$refs.tableControl2.currentIndex = index;
           },
           // 加载更多数据
           loadMore(){
@@ -129,28 +155,32 @@ import BackTop from '../../components/content/backTop/backTop.vue'
           backTopClick(){
             this.$refs.scroll.scrollTo(0,0,500)
           },
-          showBackTop(position){
+          contentScroll(position){
             this.isShowBackTop = (-position.y) > 1000
+            this.isTabFixed = (-position.y) > this.tableOffsetTop
           },
           // 广告数据
           getHomeMultidata(){
             getHomeMultidata().then(res => {          
             this.banners = res.data.banner.list;
             this.recommends =res.data.recommend.list
-          }).catch(err => {
+          })
+          .catch(err => {
             console.log(err);
           })
           },
-
           // tabcontrol数据
           getHomeGoods(type) {
             const page = this.goods[type].page + 1
             RequestsHomeGoods(type, page).then(res => {
             this.goods[type].list.push(...res.data.list)
-            this.goods[type].page += 1
-            this.$refs.scroll.finishPullUp()
-            this.$refs.scroll.refresh()//重新计算content的高度，解决content的高度在没加载完好其他就确定了一个高度导致无法滚动的bug
+            this.goods[type].page += 1   
+            this.$refs.scroll.finishPullUp()   
             })
+          },
+       
+          swiperImgLoad(){      
+            this.tableOffsetTop =this.$refs.tableControl2.$el.offsetTop;
           }
         } 
     }
@@ -167,19 +197,20 @@ import BackTop from '../../components/content/backTop/backTop.vue'
 .home-nav {
   background-color: var(--color-tiny);
   color: #fff;
-  position: fixed;
+  position: relative;
   left: 0;
   right: 0;
   top: 0;
   z-index: 9;
 }
-.wrapper{
+.content{
   overflow: hidden;
   position: absolute;
   top: 44px;
   bottom: 49px;
   left: 0;
   right: 0;
+  /* z-index: 9; */
 }
 
 /*.content {*/
@@ -188,5 +219,10 @@ import BackTop from '../../components/content/backTop/backTop.vue'
   /*overflow: hidden;*/
   /*margin-top: 44px;*/
 /*}*/
+.tableControl {
+  /* margin-top: 44px; */
+  position: relative;
+  z-index: 9;
+}
 
 </style>

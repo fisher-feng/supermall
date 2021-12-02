@@ -1,7 +1,12 @@
 <template>
   <div id="app">
     <mainTabBarbar></mainTabBarbar>
-    <router-view></router-view>
+    <!-- 如果keepalive有问题那就要在保存原来的滚动记录 -->
+    <!-- exclude排除Detail -->
+    <keep-alive exclude="Detail">
+      <router-view></router-view>
+    </keep-alive>
+  
   </div>
 </template>
 

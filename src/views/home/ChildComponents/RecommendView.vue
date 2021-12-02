@@ -3,7 +3,7 @@
     <div class="recommend">
         <div v-for="(item,id) in recommends" v-bind:key="id" class="recommend-item">
           <a v-bind:href="item.link">
-            <img v-bind:src="item.image" alt="">
+            <img v-bind:src="item.image" @load="ImgLoad">
             <div>{{item.title}}</div>
           </a>
         </div>
@@ -20,7 +20,21 @@
               return[]
             }
           }      
+        },
+        data(){
+          return{
+            IsLoadiImg:false
+          }
+        },
+        methods:{      
+          ImgLoad(){
+            if(!this.IsLoadiImg){
+              this.$emit('RecommendImg')
+              this.IsLoadiImg = true
+            }
+          }  
         }
+       
     }
 
 </script>

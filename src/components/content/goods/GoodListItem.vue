@@ -1,7 +1,7 @@
 <!--  -->
 <template>
-    <div class="goods-item">
-      <img v-bind:src="goodsItem.show.img" alt="">
+    <div class="goods-item" @click="DetailPage">
+      <img v-bind:src="goodsItem.show.img" @load="ImgItemload">
 
       <div class="goods-info">
         <p>{{goodsItem.title}}</p>
@@ -22,7 +22,17 @@
               return {}
             }
           }
-        } 
+        },
+        methods:{
+          ImgItemload(){
+            this.$bus.$emit('ItemImageLoad')
+          },
+          DetailPage(){
+            // 动态路由跳转
+            this.$router.push('/detail/'+this.goodsItem.iid)
+          }
+        }
+         
     }
 
 </script>

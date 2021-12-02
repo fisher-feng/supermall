@@ -1,7 +1,7 @@
 <!--  -->
 <template>
    <div class="wrapper" ref="wrapper">
-    <div class="content">
+    <div content>
       <slot></slot>
     </div>
   </div>
@@ -9,6 +9,7 @@
 
 <script>
 import BScroll from 'better-scroll'
+
     export default {
         name:'scroll',
         data () {
@@ -31,6 +32,9 @@ import BScroll from 'better-scroll'
           this.scroll = new BScroll(this.$refs.wrapper, {
             probeType:this.probeType,
             pullUpLoad:this.pullUpLoad, 
+            click:true,//取消阻止原生点击事件
+            tap:true//取消tap事件
+
           })
           // 监听滚动位置
           this.scroll.on('scroll',position => {
@@ -51,7 +55,7 @@ import BScroll from 'better-scroll'
           scrollTo(x,y,time){
             this.scroll.scrollTo(x,y,time)
           },
-          // 重新计算content的高度
+          // // 重新计算content的高度
           refresh(){
             this.scroll.refresh()
           }
@@ -61,8 +65,11 @@ import BScroll from 'better-scroll'
 </script>
 
 <style scoped>
-/* 先给固定高度，后面再修复bug */
+.wrapper {
+
+  
+}
 .content {
-  /* height: 8000px; */
+  /* position: absolute; */
 }
 </style>

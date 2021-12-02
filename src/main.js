@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-// import 'default-passive-events'//
+// import http from 'axios'
+// import "default-passive-events"
 Vue.config.productionTip = false
+
+Vue.prototype.$bus = new Vue()
 
 new Vue({
   router,

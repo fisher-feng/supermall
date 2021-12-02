@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <!-- <div> -->
     <swipe class="my-swipe">
       <swipe-item class="slide" v-for="(item,index) in slides" :key="index">
         <a v-bind:href="item.link">
-            <img v-bind:src="item.image" alt="">
+            <img v-bind:src="item.image" @load="LoadImg">
         </a>
       </swipe-item>
     </swipe>
@@ -32,7 +32,7 @@
       <swipe-item class="slide2">Slide2</swipe-item>
       <swipe-item class="slide3">Slide3</swipe-item>
     </swipe> -->
-  </div>
+  <!-- </div> -->
 </template>
 
 <script>
@@ -42,50 +42,47 @@
       swipe: Swipe,
       swipeItem: SwipeItem
     },
-
+    data(){
+      return{
+        IsLoadiImg:false
+      }
+    },
     methods: {
       goto(index) {
         this.$refs.mySwipe2.goto(index);
       },
       changeSwipe(newIndex, oldIndex) {
         console.log(`swipe from ${oldIndex} to ${newIndex}`);
+      },
+      LoadImg(){
+        // 为什么只判断一次，因为只要有一张就能判断tabcontrol的offesetTop的位置
+        if( !this.IsLoadiImg){
+          this.$emit('swiperImg');
+          this.IsLoadiImg = true;
+        }
       }
-    }
-    ,props:{
+    },
+    props:{
       slides:{
         default(){
           return []
         }
       }
     }
-  };
+  }
 </script>
 
 <style scoped>
   .my-swipe {
-    height: 187.19px;
+    height: 200px;
     color: #fff;
     font-size: 30px;
     text-align: center;
-  }
-  .slide1 {
-    background-color: #0089dc;
-    color: #fff;
-  }
-  .slide2 {
-    background-color: #ffd705;
-    color: #000;
-  }
-  .slide3 {
-    background-color: #ff2d4b;
-    color: #fff;
   }
 
   .my-swipe img {
     width: 100%;
   }
 
-  .slide img {
-    /* width: 100%; */
-  }
+ 
 </style>
