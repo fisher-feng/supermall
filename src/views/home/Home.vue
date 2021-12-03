@@ -89,7 +89,7 @@ import BackTop from '../../components/content/backTop/backTop.vue'
         mounted(){
 
           // 防抖节流函数
-          const refresh = debounce(this.$refs.scroll.refresh,1)
+          const refresh = debounce(this.$refs.scroll.refresh,50)
         
            // 加载完每一张图片都重新计算content高度,以免没加载完图片就给定conten高度的bug
           this.$bus.$on ('ItemImageLoad',() => {        

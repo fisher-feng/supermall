@@ -36,5 +36,61 @@ export default {
 </script>
 
 <style>
+/* 标题样式 */
+.info-title {
+  padding: 10px;
+  color: #1E2624;
+}
+/* 价格样式 */
+.info-price {
+  position: relative;
+  padding: 5px;
+  height: 30px;
 
+}
+.n-price {
+  color: #E96585;
+  font-size: 22px;
+}
+
+.o-price {
+  text-decoration: line-through;
+  font-size: 15px;
+  /* line-height: 30px; */
+  margin: 0 10px;
+}
+.discount {
+  position: absolute;
+  background-color:#F15B79;
+  color:#fff;
+  border-radius: 15px;
+  font-size: 15px;
+  padding: 2px;
+  top:0px;
+}
+/* 销量样式 */
+.info-other {
+  display: flex;
+  padding: 20px;
+  color: #939395;
+  box-shadow: 0px 3px 0 #F7F7F7;
+  font-size: 15px;
+}
+.info-other span{
+  flex: 1;
+}
+/* 退货样式 */
+.info-service {
+  display: flex;
+  padding: 20px 5px;
+  color: #554F4C;
+  box-shadow: 0px 3px 0 #F7F7F7;
+}
+.info-service-item {
+  flex: 1;
+  font-size: 15px;
+}
+.info-service-item img {
+  width: 15px;
+}
 </style>

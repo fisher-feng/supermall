@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="detail">
     <!-- 导航栏 -->
     <detail-nav-bar/>
     <!-- 轮播图 -->
@@ -27,14 +27,16 @@ export default {
     detailNavBar,
     detailSwiper,
     detailBaseInfo,
-    detailShopInfo
+    detailShopInfo,
+    
   },
   data(){
     return{
       iid: null,
       TopImages: [],
       goods: {},
-      shop:{}
+      shop:{},
+      detailInfo:{}
     }
   },
   created(){
@@ -42,15 +44,24 @@ export default {
     this.iid =this.$route.params.iid;
    
     getDetail(this.iid).then((res) => {
+      // 获取数据
       const data = res.result;
+      console.log(data);
+
       // 获取顶部轮播图数据
       this.TopImages = data.itemInfo.topImages
 
       // 获取商品信息
       this.goods = new Goods(data.itemInfo,data.columns,data.shopInfo.services)
-      console.log(data.shopInfo);
-      // 创建店铺信息
+
+      // 获取店铺信息
       this.shop = new shop(data.shopInfo)
+
+      // 获取商品详情信息
+      this.detailInfo = data.detailInfo 
+
+      // 保存参数信息
+      // this.paramsInfo = new GoodsParams(data.itemParams.info, data.itemParams.rule)
 
     })
   }
@@ -58,5 +69,10 @@ export default {
 </script>
 
 <style>
-
+.detail {
+  position: relative;
+  z-index: 999;
+  background-color: #fff;
+  height: 100vh;
+}
 </style>
