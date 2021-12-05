@@ -1,7 +1,7 @@
 <!--  -->
 <template>
    <div class="wrapper" ref="wrapper">
-    <div content>
+    <div class ="contenta">
       <slot></slot>
     </div>
   </div>
@@ -58,6 +58,7 @@ import BScroll from 'better-scroll'
           // // 重新计算content的高度
           refresh(){
             this.scroll.refresh()
+            // console.log('重新计算高度');
           }
         }
     }
@@ -68,8 +69,9 @@ import BScroll from 'better-scroll'
 .wrapper {
 
   
-}
-.content {
-  /* position: absolute; */
-}
+} 
+.contenta {
+  /* height: 2000px;  */
+} 
+
 </style>

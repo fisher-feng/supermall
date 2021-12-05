@@ -29,6 +29,9 @@ export default {
   components:{
     NavBar
   },
+  props:{
+    propsIndex:0
+  },
   data(){
     return{
      titles:['商品','参数','评论','推荐'],
@@ -36,9 +39,15 @@ export default {
     }
    
   },
+  computed:{
+    computedIndex(){
+      return this.propsIndex;
+    }
+  },
   methods:{
     itemClick(index){
       this.currentIndex = index;
+      this.$emit('NavBarPostion',index)
     },
     ClickLeft(){
       this.$router.back()
@@ -46,6 +55,13 @@ export default {
     },
     Clickgoto(){
       this.$router.go(1)
+    }
+  },
+  watch:{
+    computedIndex(newValue,oldValue){
+      this.currentIndex = this.propsIndex;//不能直接监测props，可以检测computed和methods...
+      // console.log('computedIndex的值为'+ this.propsIndex);
+      // console.log(newValue,oldValue);
     }
   }
 }

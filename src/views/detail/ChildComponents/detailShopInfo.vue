@@ -106,13 +106,10 @@ export default {
   flex:1;
 }
 
-.enter-shop{
-  padding: 20px 0;
-  text-align: center;
-}
-.shop-middle-right{
+
+/* .shop-middle-right{
   
-}
+} */
 .shop-middle-right table {
   color: #434343;
   margin:auto auto;
@@ -132,5 +129,11 @@ export default {
 .better-more {
   color: #fff; 
   background-color: #E14B62;
+}
+
+.enter-shop{
+  padding: 20px 0;
+  text-align: center;
+  box-shadow: 0px 3px 0 #F7F7F7;
 }
 </style>

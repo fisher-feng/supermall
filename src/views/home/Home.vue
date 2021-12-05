@@ -57,6 +57,8 @@ import NavBar from 'components/common/navbar/NavBar.vue'
 import TabContorl from 'components/content/TabControl/TabControl.vue'
 import GoodList from 'components/content/goods/GoodList.vue' 
 import {debounce} from 'common/utils.js'
+import BackTop from 'components/content/backTop/backTop.vue'
+
 // 业务组件
 // import HomeSwiper from 'views/home/ChildComponents/HomeSwiper.vue'
 import RecomendView from 'views/home/ChildComponents/RecommendView'
@@ -68,7 +70,7 @@ import{getHomeMultidata,RequestsHomeGoods}  from 'network/home.js'
 //使用插件
 import swipper from 'common/plug/swiper/example.vue'
 import scroll from 'common/plug/scroll/scroll.vue'
-import BackTop from '../../components/content/backTop/backTop.vue'
+
 
     export default {
         name:'',

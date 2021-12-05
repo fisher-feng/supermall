@@ -1,39 +1,53 @@
 <!--  -->
 <template>
-    <div class="goods-item" @click="DetailPage">
-      <img v-bind:src="goodsItem.show.img" @load="ImgItemload">
+  <div class="goods-item" @click="DetailPage">
+    <!-- <div v-if ="goodsItem.show">aaaaaa</div>
+    <div v-else>bbbbbbb</div> -->
+    <img  v-if ="goodsItem.show" v-bind:src="goodsItem.show.img" @load="ImgItemload">
+    <img  v-else v-bind:src="goodsItem.image" @load="ImgItemload">
 
-      <div class="goods-info">
-        <p>{{goodsItem.title}}</p>
-        <span class="price">{{goodsItem.price}}</span>
-        <span class="collect">{{goodsItem.cfav}}</span>
-      </div>
-      
+    <div class="goods-info">
+      <p>{{goodsItem.title}}</p>
+      <span class="price">{{goodsItem.price}}</span>
+      <span class="collect">{{goodsItem.cfav}}</span>
     </div>
+  </div>
 </template>
 
 <script>
-    export default {
-        name:'', 
-        props:{
-          goodsItem:{
-            type:Object,
-            default(){
-              return {}
-            }
-          }
-        },
-        methods:{
-          ImgItemload(){
-            this.$bus.$emit('ItemImageLoad')
-          },
-          DetailPage(){
-            // 动态路由跳转
-            this.$router.push('/detail/'+this.goodsItem.iid)
-          }
-        }
-         
+export default {
+  name:'', 
+  props:{
+    goodsItem:{
+      type:Object,
+      default(){
+        return {}
+      }
     }
+  },
+  methods:{
+    // 这里有bug，需要调
+    ImgItemload(){
+      if(this.$route.path.indexOf('/home') == 0){
+          this.$bus.$emit('ItemImageLoad')//这是在home.vue里面使用的
+        //  console.log('home');
+      
+      }else if (this.$route.path.indexOf('/detail') == 0){
+          this.$bus.$emit('detailItemImageLoad')//这是在detail.vue里面使用的 
+        //  console.log('detail');          
+      }
+
+    },
+    DetailPage(){
+      // 动态路由跳转
+      if(this.$route.path.indexOf('/home') == 0){
+        this.$router.push('/detail/'+this.goodsItem.iid)
+      }
+      
+    }
+  }
+         
+}
 
 </script>
 

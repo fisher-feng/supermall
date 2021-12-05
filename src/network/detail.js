@@ -8,6 +8,13 @@ export function getDetail(iid) {
   })
 }
 
+export function getRecommend() {
+  return request({
+    url: '/recommend'
+  })
+
+}
+
 export class Goods {
   constructor(itemInfo, columns, services) {
     this.title = itemInfo.title
@@ -34,12 +41,18 @@ export class shop {
   }
 }
 
+export class Info {
+  constructor(info) {
+    this.desc = info.desc
+    this.list = info.detailImage[0].list
+  }
+}
+
 export class GoodsParams {
   constructor(info, rule) {
     // 注：images可能没有值（某些商品有值，有些没有）
     this.image = info.images ? info.images[0] : '';
     this.infos = info.set;
-    this.sizes = rules.tables;
-
+    this.sizes = rule.tables[0];
   }
 }
