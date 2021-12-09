@@ -2,6 +2,8 @@
   <div class="detail">
     <!-- 导航栏 -->
     <detail-nav-bar  @NavBarPostion = "skipPosition" :propsIndex = "currentIndex"/>
+    <!-- <toast></toast> -->
+
     <scroll   class="content"
               ref ="scroll"
               @scroll="contentScroll"
@@ -17,7 +19,7 @@
       <detail-shop-info :shop = "shop"></detail-shop-info>
       <!-- 商品详情 -->
       <!-- 这里的ImgLoad可以换到最后 -->
-      <detail-goods-info :goodsInfo = "goodslInfo"  @ImgLoad = "ImgLoad"></detail-goods-info>
+      <detail-goods-info :goodsInfo = "goodsInfo"  @ImgLoad = "ImgLoad"></detail-goods-info>
       <!-- 商品参数信息 -->
       <detail-goods-params :GoodsParams = "paramsInfo" ref="paramsInfo"></detail-goods-params>
       <!-- 评论信息 -->
@@ -25,8 +27,10 @@
       <!-- 推荐信息 -->
       <detail-recommeds :recommends = "recommends" ref="recommends"></detail-recommeds>
      
-      
-    </scroll>
+    </scroll>  
+
+    <!-- 加入购物车 -->
+    <detail-join-cart  @addToCart = "addToCart"></detail-join-cart>
     <!-- 回到顶部 -->
     <back-top @click.native="backTopClick" v-if="isShowBackTop"></back-top>
   </div>
@@ -43,10 +47,13 @@ import detailGoodsInfo from 'views/detail/ChildComponents/detailGoodsInfo.vue'
 import detailGoodsParams from 'views/detail/ChildComponents/detailGoodsParams.vue'
 import detailCommentInfo from 'views/detail/ChildComponents/detailCommentInfo.vue'
 import detailRecommeds from 'views/detail/ChildComponents/detailRecommends.vue'
+import detailJoinCart from 'views/detail/ChildComponents/detailJoinCart.vue'
 //公共业务组件
 import BackTop from 'components/content/backTop/backTop.vue'
+import {debounce} from 'common/utils.js'
 // 公共常用组件
-import {itemListenerMixin} from 'common/mixin.js'
+import {itemListenerMixin} from 'common/mixin.js'//混入
+import toast from 'components/common/toast/toast.vue'
 // 网络数据
 import {getDetail,getRecommend,Goods,shop,Info,GoodsParams } from 'network/detail.js'
 
@@ -65,6 +72,8 @@ export default {
     detailGoodsParams,
     detailCommentInfo,
     detailRecommeds,
+    detailJoinCart,
+    toast,
 
     BackTop,
 
@@ -77,7 +86,7 @@ export default {
       TopImages: [],
       goods: {},
       shop:{},
-      goodslInfo:{},
+      goodsInfo:{},
       paramsInfo:{},
       commentInfo:{},
       recommends:[],
@@ -85,47 +94,57 @@ export default {
       paramsInfoPosition:0,
       commentInfoPosition:0,
       recommendsPosition:0,
-      currentIndex:0
-
+      currentIndex:0,
+      getThemeTopY:null,
+      ThemeTopYS:[]
     }
   },
   methods:{
     contentScroll(position){
       this.isShowBackTop = (-position.y) > 1000
       this.isTabFixed = (-position.y) > this.tableOffsetTop
-      
-      if((-position.y) < this.paramsInfoPosition){
-        this.currentIndex = 0;
-      }else if((-position.y) < this.commentInfoPosition){
-        this.currentIndex = 1;
-      }else if((-position.y) < this.recommendsPosition){
-        this.currentIndex = 2;
-      }else {
-        this.currentIndex = 3 ;
-      }
-      
+      /* 滚到对应位置，导航栏跟着改变 */
+      const positionY = -position.y;
+      for(let i = 0;i < this.ThemeTopYS.length-1; i++){
+        if((this.currentIndex !== i) && 
+        (positionY < this.ThemeTopYS[i+1])&&
+        (positionY > this.ThemeTopYS[i])){
+          this.currentIndex = i;
+        }
+      }  
     },
     backTopClick(){
       this.$refs.scroll.scrollTo(0,0,500)
     },
     ImgLoad(){
-      this.$refs.scroll.refresh();
-      this.paramsInfoPosition =this.$refs.paramsInfo.$el.offsetTop;
-      this.commentInfoPosition =this.$refs.commentInfo.$el.offsetTop;
-      this.recommendsPosition =this.$refs.recommends.$el.offsetTop;
+      this.$refs.scroll.refresh();//这里没用防抖节流
+      this.getThemeTopY()  //用了防抖节流 
     },
-    skipPosition(position){
-      // console.log(position);
-      switch(position){
-        case 0: this.$refs.scroll.scrollTo(0,0,0);break;
-        case 1: this.$refs.scroll.scrollTo(0,-this.paramsInfoPosition,0);break;
-        case 2: this.$refs.scroll.scrollTo(0,-this.commentInfoPosition,0);break;
-        case 3: this.$refs.scroll.scrollTo(0,-this.recommendsPosition,0);break;
-      }   
+    skipPosition(index){
+      this.$refs.scroll.scrollTo(0,-this.ThemeTopYS[index],0);
+    },
+    addToCart(){
+      // 获取购物车需要展示的信息
+      const product = {}
+      // product.image = 0;
+      // console.log(this.goods);
+      product.image = this.TopImages[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.price = this.goods.realPrice;
+      product.iid = this.iid;
+
+      // 将商品添加到购物车
+      this.$store.dispatch('addCart',product).then(res =>{
+        
+        this.$toast.show(res,2000); 
+
+      });//dispatch是操作actions
+     
     }
   },
   created(){
-    // console.log(this.$route.path);
+   
     //保存传入的iid值
     this.iid =this.$route.params.iid;
     // 请求详情数据
@@ -144,7 +163,7 @@ export default {
       this.shop = new shop(data.shopInfo)
 
       //获取商品详情信息
-      this.goodslInfo = new Info(data.detailInfo)
+      this.goodsInfo = new Info(data.detailInfo)
 
       //获取参数信息
       this.paramsInfo = new GoodsParams(data.itemParams.info, data.itemParams.rule)
@@ -158,15 +177,24 @@ export default {
     //请求推荐数据
     getRecommend().then((res) =>{
       this.recommends = res.data.list;
-      // console.log(this.recommends);
+      
+      // $nextTick是渲染完再执行，以防 没有渲染完，得不到准确的数据
+      this.$nextTick (() => {
+       
+      })
     })
-
+    // 给getThemeTopY赋值拿到导航栏对应的offset值
+    this.getThemeTopY = debounce(() =>{
+      this.ThemeTopYS = [0];
+      this.ThemeTopYS.push(this.$refs.paramsInfo.$el.offsetTop);
+      this.ThemeTopYS.push(this.$refs.commentInfo.$el.offsetTop);
+      this.ThemeTopYS.push(this.$refs.recommends.$el.offsetTop);
+      this.ThemeTopYS.push(this.$refs.recommends.$el.offsetTop+10000);//用于做判断区间
+      // this.ThemeTopYS.push(Number.MAX_VALUE);//用于做判断区间
+    },50)
   },
   mounted(){
 
-    // this.$bus.$on ('detailItemImageLoad',() => {        
-    //   // this.$refs.scroll.refresh();     
-    // })
   }
 }
 </script>
@@ -176,7 +204,7 @@ export default {
   position: relative;
   height: 100vh;
   background-color: #fff;
-  /* border: solid; */
+  z-index: 999;
 }
 .detail-nav-bar{
   position: relative;

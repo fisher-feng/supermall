@@ -3,8 +3,8 @@
   <div class="goods-item" @click="DetailPage">
     <!-- <div v-if ="goodsItem.show">aaaaaa</div>
     <div v-else>bbbbbbb</div> -->
-    <img  v-if ="goodsItem.show" v-bind:src="goodsItem.show.img" @load="ImgItemload">
-    <img  v-else v-bind:src="goodsItem.image" @load="ImgItemload">
+    <img  v-if ="goodsItem.show" v-lazy ="goodsItem.show.img" @load="ImgItemload">
+    <img  v-else v-lazy="goodsItem.image" @load="ImgItemload">
 
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>

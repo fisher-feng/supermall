@@ -68,7 +68,7 @@ export default {
 </script>
 <style scoped>
 .detailnavbar {
-  margin-bottom: 2px;
+  /* margin-bottom: 2px; */
 }
 
 .center {
@@ -78,7 +78,7 @@ export default {
   flex: 1;
 }
 .active {
-  border-bottom: 3px solid var(--color-tiny) ;
+  /* border-bottom: 3px solid var(--color-tiny) ; */
   color: pink;
 }
 .back img{

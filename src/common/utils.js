@@ -1,5 +1,5 @@
-/* 防抖节流 */
-export function debounce(func, delay) {
+/* 防抖节流  默认值50ms*/
+export function debounce(func, delay = 50) {
   let timer = null
   return function(...args) {
     //这里

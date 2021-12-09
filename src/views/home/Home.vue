@@ -18,7 +18,7 @@
         />
       <!--scroll插件的使用  -->
       
-      <scroll class="content" 
+      <scroll class="ignore content" 
               ref="scroll"
               @pullingUp ="loadMore"
               @scroll="contentScroll"

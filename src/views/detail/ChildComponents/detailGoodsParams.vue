@@ -61,9 +61,8 @@ export default {
   width: 90%;
   padding: 30px 0px;
 }
-.goods-other-list {
-  box-shadow: 0px 1px 0 #F7F7F7;
-
+.goods-other .goods-other-list {
+  box-shadow: 0px 10px 0 #F7F7F7;
 }
 .goods-other-list .list-left {
   width: 30%;
